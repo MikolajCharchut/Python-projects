@@ -6,13 +6,13 @@ import time
 # Queens Of The Stone Age ID: 56168
 
 try:
-    id = int(input('Eneter band ID: '))
+    id = int(input('Eneter band ID: ')) # entering oryginal band id
 except Exception:
     print('Bad ID')
 
-page_url = 'https://api.discogs.com/artists/' + str(id)
+page_url = 'https://api.discogs.com/artists/' + str(id) # creating url
 
-page = requests.get(page_url)
+page = requests.get(page_url) # making a request
 
 if int(page.headers.get('X-Discogs-Ratelimit-Remaining')) == 0:
     print('Rate limit achived, please wait 1 min..')
@@ -22,43 +22,43 @@ if page.status_code != 200 | page.status_code != 429:
     print("Bad server status")
     sys.exit(1)
 
-membersList = page.json()['members']
+membersList = page.json()['members'] # getting list of oryginal band's members
 
-names = {}
+names = {} # dictionary with members and all their bands
 
-for i in membersList:
-    bands = []
-    getBand = requests.get(i['resource_url'])
+# filling the names dictionary:
+for member in membersList:
+    bandNames = []
+    getBand = requests.get(member['resource_url'])
     if int(getBand.headers.get('X-Discogs-Ratelimit-Remaining')) == 0:
         print('Rate limit achived, please wait 1 min..')
         time.sleep(60)
     try:
-        for j in getBand.json()['groups']:
-            bands.append(j['name'])
-        names[i['name']] = bands
-    except: pass
+        for band in getBand.json()['groups']:
+            bandNames.append(band['name'])
+        names[member['name']] = bandNames
+    except Exception: 
+        pass
 
-
-result = {}
+# putting all band names into list:
 bands = []
+for member, band in names.items(): 
+    bands += band
 
-for i in names:
-    for j in names[i]:
-        bands.append(j)
+bands = list(set(bands)) # removing duplicates
 
-bands = set(bands)
-bands = list(bands)
+# making empty list as a value of result dicttionary:
+result = {i: [] for i in bands}
 
-for i in bands:
-    result[i] = []
+# filling the result dictionary with band name as a key and list of members from oryginal band as value:
+for member in names:
+    for band in names[member]:
+        if band in bands:
+            result[band].append(member)
 
-for i in names:
-    for j in names[i]:
-        if j in bands:
-            result[j].append(i)
-
-for i in sorted(result):
-    if len(result[i]) >= 2:
-        print('Band:', i, '|| Members:', result[i])
+# sorting alphabetically band names and dropping those bands that have only one member from oryginal band
+for band in sorted(result):
+    if len(result[band]) >= 2:
+        print('Band:', band, '|| Members:', result[band])
 
 sys.exit(0)
