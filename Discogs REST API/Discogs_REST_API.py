@@ -2,12 +2,12 @@ import requests
 import sys
 import time
 
-#Budka Suflera ID: 359282
-#Queens Of The Stone Age ID: 56168
+# Budka Suflera ID: 359282
+# Queens Of The Stone Age ID: 56168
 
 try:
     id = int(input('Eneter band ID: '))
-except:
+except Exception:
     print('Bad ID')
 
 page_url = 'https://api.discogs.com/artists/' + str(id)
