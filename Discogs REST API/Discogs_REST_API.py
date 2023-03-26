@@ -57,8 +57,8 @@ for member in names:
             result[band].append(member)
 
 # sorting alphabetically band names and dropping those bands that have only one member from oryginal band
-for band in sorted(result):
-    if len(result[band]) >= 2:
-        print('Band:', band, '|| Members:', result[band])
+for band, members in sorted(result.items()):
+    if len(members) >= 2:
+        print('Band:', band, '|| Members:', members)
 
 sys.exit(0)
